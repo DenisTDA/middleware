@@ -1,20 +1,10 @@
 class ParamsParser
-  
   TIME_CONST = { 'year' => :year, 'month' => :month, 'day' => :day,
-                'hour' => :hour, 'minute' => :min, 'second' => :sec }.freeze
-  PATH = '/time'.freeze                
+                 'hour' => :hour, 'minute' => :min, 'second' => :sec }.freeze
 
   def initialize(request)
     @path = request.path
     @params = request.params['format']
-  end
-
-  def create_result
-    if correct?
-      [ Rack::Utils::SYMBOL_TO_STATUS_CODE[:ok], body_good_params ]
-    else
-      [ Rack::Utils::SYMBOL_TO_STATUS_CODE[:bad_request], body_bad_params ]
-    end
   end
 
   def correct?
@@ -22,12 +12,12 @@ class ParamsParser
   end
 
   def valid?
-    @path.eql?(PATH) && !@params.nil?
+    params_exist? && params_correct?
   end
 
-  private
-
   def body_bad_params
+    return unless params_exist?
+
     str = params_incorrect.map { |param| "[#{param}]" }.join(',')
     ["Unknown time format: #{str}\n"]
   end
@@ -38,11 +28,21 @@ class ParamsParser
     ["#{str}\n"]
   end
 
+  private
+
   def params_parser
     @params.split(',')
   end
 
   def params_incorrect
-    params_parser.select { |param| !TIME_CONST.include?(param) }
+    params_parser.reject { |param| TIME_CONST.keys.include?(param) }
+  end
+
+  def params_exist?
+    !@params.nil? && !@params.empty?
+  end
+
+  def params_correct?
+    params_incorrect.empty?
   end
 end
