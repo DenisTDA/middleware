@@ -1,7 +1,7 @@
-require_relative 'time_body'
+require_relative 'params_parser'
 require_relative 'time_app'
 
+use Rack::ContentType, "text/plain"
 use Rack::Reloader
-use TimeBody
 
 run TimeApp.new
