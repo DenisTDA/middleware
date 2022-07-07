@@ -1,4 +1,4 @@
-class ParamsParser
+class TimeBuilder
   TIME_CONST = { 'year' => :year, 'month' => :month, 'day' => :day,
                  'hour' => :hour, 'minute' => :min, 'second' => :sec }.freeze
 
@@ -15,17 +15,17 @@ class ParamsParser
     params_exist? && params_correct?
   end
 
-  def body_bad_params
+  def errors
     return unless params_exist?
 
     str = params_incorrect.map { |param| "[#{param}]" }.join(',')
-    ["Unknown time format: #{str}\n"]
+    "Unknown time format: #{str}\n"
   end
 
-  def body_good_params
+  def time
     time = Time.now
     str = params_parser.map { |param| time.send(TIME_CONST[param]).to_s }.join('-')
-    ["#{str}\n"]
+    "#{str}\n"
   end
 
   private
